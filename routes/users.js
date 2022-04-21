@@ -66,8 +66,6 @@ router.get("/:username", ensureCurrentUserOrAdmin, async function (req, res, nex
     const user = await User.get(req.params.username);
     return res.json({ user });
 
-    throw new UnauthorizedError();
-  
 });
 
 

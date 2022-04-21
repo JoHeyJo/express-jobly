@@ -15,8 +15,7 @@ function getQueryValues(params) {
       if (parseInt(params.minEmployees) > parseInt(params.maxEmployees)) {
         throw new BadRequestError("Max employee cannot be more than min employee!");
       }
-    } 
-
+    }
 
   let values = [];
 

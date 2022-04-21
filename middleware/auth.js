@@ -51,41 +51,41 @@ function ensureLoggedIn(req, res, next) {
  * If not, raises Unauthorized.
  */
 
-function ensureAdmin(req, res, next){
+function ensureAdmin(req, res, next) {
   try {
     if (!res.locals.user || !res.locals.user.isAdmin) {
-        throw new UnauthorizedError();
+      throw new UnauthorizedError();
     }
     return next();
-  }catch(err){
+  } catch (err) {
     return next(err);
   }
 }
 
-function ensureCurrentUserOrAdmin(req, res, next){
-  console.log('>>>>>>>>res.locals.user.username',res.locals.user.username )
-  console.log('>>>>>>>>req.params.username',req.params.username )
+
+/** Middleware to use when user must be current user or an admin
+ *
+ * if not, raises Unauthorized.
+ */
+
+function ensureCurrentUserOrAdmin(req, res, next) {
   try {
-    if(!res.locals.user) throw new UnauthorizedError("not logged in")
-    return next()
-  } catch(err){
-    return next(err)
-  }
-
-  try{
-    if((!res.locals.user.isAdmin) && (res.locals.user.username !== req.params.username)){
-      throw new UnauthorizedError();
-      }
+    if (res.locals.user && (res.locals.user.isAdmin ||
+      res.locals.user.username === req.params.username)) {
       return next();
-      }  catch(err){
-      return next(err)
     }
+    else {
+      throw new UnauthorizedError();
+    }
+  } catch (err) {
+    return next(err);
   }
+}
 
 
-module.exports = {
-  authenticateJWT,
-  ensureLoggedIn,
-  ensureAdmin,
-  ensureCurrentUserOrAdmin
-};
+  module.exports = {
+    authenticateJWT,
+    ensureLoggedIn,
+    ensureAdmin,
+    ensureCurrentUserOrAdmin
+  };

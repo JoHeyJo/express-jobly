@@ -5,7 +5,7 @@
 const jsonschema = require("jsonschema");
 const express = require("express");
 
-const { BadRequestError } = require("../expressError");
+const { BadRequestError, NotFoundError } = require("../expressError");
 const { ensureLoggedIn } = require("../middleware/auth");
 const Company = require("../models/company");
 
@@ -48,10 +48,10 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  console.log("req.query=", req.query)
+
   if (Object.keys(req.query).length > 0) {
-    const companies = await Company.filter(req.query);
-    return res.json({ companies });
+      const companies = await Company.filter(req.query);
+      return res.json({ companies });
   }
 
   const companies = await Company.findAll();

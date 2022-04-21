@@ -31,13 +31,13 @@ function getQueryValues(params) {
   }
   //if params[name] => UPPER(name) LIKE $index, push UPPER('%name%') in to values array
   if (params.nameLike) {
-    values.push(`UPPER('%${params.nameLike}%')`);
-    filterParams.push(`UPPER(name) LIKE $${values.length}`);
+    values.push(`%${params.nameLike}%`);
+    filterParams.push(`name ILIKE $${values.length}`);
   }
 
   let queryString;
 
-  filterParams.length > 0
+  filterParams.length > 1
     ? queryString = filterParams.join(" AND ")
     : queryString = filterParams[0];
 

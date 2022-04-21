@@ -6,7 +6,7 @@ const { BadRequestError } = require("../expressError");
 const object = {
   minEmployees: "500",
   maxEmployees: "1000",
-  name: "Dot",
+  nameLike: "Dot",
 };
 
 describe("getQueryValues", function () {
@@ -14,11 +14,11 @@ describe("getQueryValues", function () {
 
     const result = getQueryValues(object);
     expect(result).toEqual({
-      "queryString": "num_employees > $1 AND num_employees < $2 AND UPPER(name) LIKE $3",
+      "queryString": "num_employees >= $1 AND num_employees <= $2 AND name ILIKE $3",
       "values": [
         "500",
         "1000",
-        "UPPER('%Dot%')",
+        "%Dot%",
       ],
     });
   });

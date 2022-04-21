@@ -48,29 +48,15 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-  /* if filtering params present in qstring =>
-  check that given filtering params are valid, if so call Company.filter(), if not throw error */
-  //otherwise, if no filtering given, get all companies
-
-  //check length
-  // if (req.query) {
-  //   const validator = jsonschema.validate(req.query, companiesFilterSchema);
-
-  //   if (!validator.valid) {
-  //     const errs = validator.errors.map(e => e.stack);
-  //     throw new BadRequestError(errs);
-  //   }
-
-  //   if (req.query.minEmployees && req.query.maxEmployees) {
-  //     if (req.query.minEmployees > req.query.maxEmployees) {
-  //       throw new BadRequestError;
-  //     }
-  //   }
+  console.log("req.query=", req.query)
+  if (Object.keys(req.query).length > 0) {
     const companies = await Company.filter(req.query);
     return res.json({ companies });
-  // }
-  // const companies = await Company.findAll();
-  // return res.json({ companies });
+  }
+
+  const companies = await Company.findAll();
+  return res.json({ companies });
+
 });
 
 /** GET /[handle]  =>  { company }

@@ -206,3 +206,42 @@ describe("remove", function () {
     }
   });
 });
+
+/************************************** filter */
+
+describe("filter", function () {
+  test("works with minEmployees", async function () {
+    let companies = await Company.filter({ minEmployees: '1' });
+    expect(companies.length).toEqual(3);
+  });
+
+  test("works with maxEmployees", async function () {
+    let companies = await Company.filter({ maxEmployees: '3' });
+    expect(companies.length).toEqual(3);
+  });
+
+  test("works with minEmployees and maxEmployees", async function () {
+    let companies = await Company.filter({ minEmployees: 1, maxEmployees: 2 });
+    expect(companies.length).toEqual(2);
+  });
+
+  test("works with nameLike", async function () {
+    let companies = await Company.filter({ nameLike: 'c' });
+    expect(companies.length).toEqual(3);
+  });
+
+
+  test("works with all three filter parameters", async function () {
+    let companies = await Company.filter({ minEmployees: 1, maxEmployees: 3, nameLike: 'c' });
+    expect(companies.length).toEqual(3);
+  });
+
+  test("not found if filter criteria finds no matches", async function () {
+    try {
+      await Company.filter( {nope: "nope" });
+      fail();
+    } catch (err) {
+      expect(err instanceof NotFoundError).toBeTruthy();
+    }
+  });
+});

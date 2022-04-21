@@ -145,9 +145,11 @@ class Company {
   }
 
 
-  /** Filter */
+  /** Filter companies retrieved from database; returns an array of companies by
+   * specified filter parameters (minEmployees, maxEmployees and/or name */
+
 static async filter(params){
-// console.log('params....',params.name)
+
 const { values, queryString } = getQueryValues(params)
 console.log('queryString',queryString)
 console.log('values', ...values)
@@ -165,7 +167,7 @@ console.log('values', ...values)
 
     const companies = companiesRes.rows;
 
-    if (!companies) throw new NotFoundError(`No company exists`);
+    if (!companies) throw new NotFoundError(`No results found`);
 
     return companies;
   }

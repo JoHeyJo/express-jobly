@@ -235,7 +235,7 @@ describe("GET /users/:username", function () {
     const resp = await request(app)
         .get(`/users/u2`)
         .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(404);
+    expect(resp.statusCode).toEqual(401);
   });
 
   test("not found if user not found", async function () {

@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.44% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>17/18</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">92.85% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>13/14</span>
+                <span class='fraction'>19/19</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">94.44% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>17/18</span>
+                <span class='fraction'>20/20</span>
             </div>
         
             
@@ -111,7 +111,10 @@
 <a name='L46'></a><a href='#L46'>46</a>
 <a name='L47'></a><a href='#L47'>47</a>
 <a name='L48'></a><a href='#L48'>48</a>
-<a name='L49'></a><a href='#L49'>49</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -122,20 +125,18 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">15x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">7x</span>
-<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">12x</span>
@@ -144,8 +145,13 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">12x</span>
-<span class="cline-any cline-yes">4x</span>
-<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-yes">7x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">12x</span>
+<span class="cline-any cline-yes">6x</span>
+<span class="cline-any cline-yes">6x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -163,18 +169,21 @@
 &nbsp;
 const { BadRequestError } = require("../expressError");
 &nbsp;
-/** getQueryValues takes in and object of query string parameters,
+/** getQueryValues takes in an object of query string parameters,
   checks that given filtering params are valid, parses the incoming
   data, and returns an object containing an SQL query string and corresponding
   values */
 &nbsp;
 function getQueryValues(params) {
 &nbsp;
-  if (params.minEmployees &amp;&amp; params.maxEmployees) {
-    <span class="missing-if-branch" title="if path not taken" >I</span>if (parseInt(params.minEmployees) &gt; parseInt(params.maxEmployees)) {
-<span class="cstat-no" title="statement not covered" >      throw new BadRequestError;</span>
-    }
-  }
+  if(!params.minEmployees &amp;&amp; !params.maxEmployees &amp;&amp; !params.nameLike){
+    throw new BadRequestError(`${Object.keys(params)[0]} is invalid.`);
+  } else if (params.minEmployees &amp;&amp; params.maxEmployees) {
+      if (parseInt(params.minEmployees) &gt; parseInt(params.maxEmployees)) {
+        throw new BadRequestError("Max employee cannot be more than min employee!");
+      }
+    } 
+&nbsp;
 &nbsp;
   let values = [];
 &nbsp;
@@ -182,18 +191,18 @@ function getQueryValues(params) {
 &nbsp;
   //if params[minEmployees] =&gt; num_employees &gt; $index, push value into value array
   if (params.minEmployees) {
-    filterParams.push(`num_employees &gt;= $${values.length}`);
     values.push(params.minEmployees);
+    filterParams.push(`num_employees &gt;= $${values.length}`);
   }
   //if params[maxEmployees] =&gt; num_employees &lt; $index, push value into array
   if (params.maxEmployees) {
-    filterParams.push(`num_employees &lt;= $${values.length}`);
     values.push(params.maxEmployees);
+    filterParams.push(`num_employees &lt;= $${values.length}`);
   }
   //if params[name] =&gt; UPPER(name) LIKE $index, push UPPER('%name%') in to values array
   if (params.nameLike) {
-    filterParams.push(`name ILIKE $${values.length}`);
     values.push(`%${params.nameLike}%`);
+    filterParams.push(`name ILIKE $${values.length}`);
   }
 &nbsp;
   let queryString;
@@ -214,7 +223,7 @@ module.exports = { getQueryValues };
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at Thu Apr 21 2022 09:59:16 GMT-0700 (Pacific Daylight Time)
+                at Thu Apr 21 2022 10:57:49 GMT-0700 (Pacific Daylight Time)
             </div>
         <script src="../../prettify.js"></script>
         <script>

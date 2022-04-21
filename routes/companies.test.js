@@ -261,6 +261,24 @@ describe("GET /companies? with query filters", function () {
     });
   });
 
+  test("invalid query string", async function () {
+    const resp = await request(app).get("/companies?nope=nope");
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.body.error.message).toEqual("nope is invalid.");
+  });  
+
+  test("test if min is graeter than max, fails", async function () {
+    const resp = await request(app).get("/companies?minEmployees=6&maxEmployees=3");
+    expect(resp.statusCode).toEqual(400);
+    expect(resp.body.error.message).toEqual("Max employee cannot be more than min employee!");
+  });  
+
+  test("test none existing company", async function () {
+    const resp = await request(app).get("/companies?nameLike=asdf");
+    expect(resp.statusCode).toEqual(404);
+    expect(resp.body.error.message).toEqual("No results found");
+  });  
+
 });
 
 

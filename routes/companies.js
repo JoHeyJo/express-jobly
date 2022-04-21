@@ -48,15 +48,13 @@ router.post("/", ensureLoggedIn, async function (req, res, next) {
  */
 
 router.get("/", async function (req, res, next) {
-
   if (Object.keys(req.query).length > 0) {
       const companies = await Company.filter(req.query);
       return res.json({ companies });
+  } else {
+    const companies = await Company.findAll();
+    return res.json({ companies });
   }
-
-  const companies = await Company.findAll();
-  return res.json({ companies });
-
 });
 
 /** GET /[handle]  =>  { company }

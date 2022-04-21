@@ -150,9 +150,7 @@ class Company {
 
 static async filter(params){
 
-const { values, queryString } = getQueryValues(params)
-console.log('queryString',queryString)
-console.log('values', ...values)
+  const { values, queryString } = getQueryValues(params)
 
     const companiesRes = await db.query(
       `SELECT handle,
@@ -163,11 +161,11 @@ console.log('values', ...values)
          FROM companies
          WHERE ${queryString}
          ORDER BY name`,
-      [...values]);
+      values);
 
     const companies = companiesRes.rows;
 
-    if (!companies) throw new NotFoundError(`No results found`);
+    if (companies.length === 0) throw new NotFoundError(`No results found`);
 
     return companies;
   }

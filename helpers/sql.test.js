@@ -19,7 +19,7 @@ const updateData = {
 const noData = {};
 
 describe("sqlForPartialUpdate", function () {
-  test("works: valid data", function () {
+  test("pass: valid data", function () {
 
     const result = sqlForPartialUpdate(updateData, jsToSql);
 
@@ -29,7 +29,7 @@ describe("sqlForPartialUpdate", function () {
     });
   });
 
-  test("tests fails when no data passed in", function () {
+  test("fails: when no data passed in", function () {
 
     try {
       sqlForPartialUpdate(noData, jsToSql);
@@ -38,3 +38,5 @@ describe("sqlForPartialUpdate", function () {
     }
   });
 });
+
+// test changing order of obj

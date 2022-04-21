@@ -1,9 +1,8 @@
 const { BadRequestError } = require("../expressError");
 
-// THIS NEEDS SOME GREAT DOCUMENTATION.
 
 /** Takes in two objects: 
- * - dataToUpdate = user data
+ * - dataToUpdate = generic data maipulator
  * - jsToSql = camelCase to snake_case converter
  * Takes camelCase keys of object and converts them to snake_case to match SQL db
  * Returns an object  

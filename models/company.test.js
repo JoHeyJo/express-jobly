@@ -241,7 +241,7 @@ describe("filter", function () {
       await Company.filter( {nope: "nope" });
       fail();
     } catch (err) {
-      expect(err instanceof NotFoundError).toBeTruthy();
+      expect(err instanceof BadRequestError).toBeTruthy();
     }
   });
 });

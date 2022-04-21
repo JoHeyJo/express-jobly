@@ -3,6 +3,7 @@
 const db = require("../db");
 const { BadRequestError, NotFoundError } = require("../expressError");
 const { sqlForPartialUpdate } = require("../helpers/sql");
+const { getQueryValues } = require("../helpers/getQueryValues")
 
 /** Related functions for companies. */
 
@@ -145,28 +146,11 @@ class Company {
 
 
   /** Filter */
-
-  static async filter(criteria) {
-
-    let values = [];
-    // [minEmployees]
-    let filterParams = [];
-
-    //if criteria[minEmployees] => num_employees > handleVarIdx, push value into value array
-    if(criteria[minEmployees]){
-      values.push(criteria[minEmployees])
-      filterParams.push(`num_employees > $${values.length}`);
-    }
-    //if criteria[maxEmployees] => num_employees < handleVarIdx
-    if(criteria[maxEmployees]){
-      values.push(criteria[maxEmployees])
-      filterParams.push(`num_employees < $${values.length}`);
-    }
-    //if criteria[name] => name = handleVarIdx
-    if(criteria[name]){
-      values.push(`%${criteria[name]}%`)
-      filterParams.push(`name=$${values.length}`);
-    }
+static async filter(params){
+// console.log('params....',params.name)
+const { values, queryString } = getQueryValues(params)
+console.log('queryString',queryString)
+console.log('values', ...values)
 
     const companiesRes = await db.query(
       `SELECT handle,
@@ -175,17 +159,16 @@ class Company {
               num_employees AS "numEmployees",
               logo_url AS "logoUrl"
          FROM companies
-         WHERE ${filterParams}
+         WHERE ${queryString}
          ORDER BY name`,
-      [values]);
+      [...values]);
 
-    const company = companiesRes.rows[0];
+    const companies = companiesRes.rows;
 
-    if (!company) throw new NotFoundError(`No company: ${handle}`);
+    if (!companies) throw new NotFoundError(`No company exists`);
 
-    return company;
+    return companies;
   }
 }
-
 
 module.exports = Company;

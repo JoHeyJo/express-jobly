@@ -53,24 +53,24 @@ router.get("/", async function (req, res, next) {
   //otherwise, if no filtering given, get all companies
 
   //check length
-  if (req.query) {
-    const validator = jsonschema.validate(req.query, companiesFilterSchema);
+  // if (req.query) {
+  //   const validator = jsonschema.validate(req.query, companiesFilterSchema);
 
-    if (!validator.valid) {
-      const errs = validator.errors.map(e => e.stack);
-      throw new BadRequestError(errs);
-    }
+  //   if (!validator.valid) {
+  //     const errs = validator.errors.map(e => e.stack);
+  //     throw new BadRequestError(errs);
+  //   }
 
-    if (req.query.minEmployees && req.query.maxEmployees) {
-      if (req.query.minEmployees > req.query.maxEmployees) {
-        throw new BadRequestError;
-      }
-    }
+  //   if (req.query.minEmployees && req.query.maxEmployees) {
+  //     if (req.query.minEmployees > req.query.maxEmployees) {
+  //       throw new BadRequestError;
+  //     }
+  //   }
     const companies = await Company.filter(req.query);
     return res.json({ companies });
-  }
-  const companies = await Company.findAll();
-  return res.json({ companies });
+  // }
+  // const companies = await Company.findAll();
+  // return res.json({ companies });
 });
 
 /** GET /[handle]  =>  { company }

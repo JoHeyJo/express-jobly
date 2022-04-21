@@ -11,6 +11,7 @@ const {
   commonAfterEach,
   commonAfterAll,
   u1Token,
+  adminToken
 } = require("./_testCommon");
 
 beforeAll(commonBeforeAll);
@@ -33,7 +34,7 @@ describe("POST /companies", function () {
     const resp = await request(app)
       .post("/companies")
       .send(newCompany)
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(201);
     expect(resp.body).toEqual({
       company: newCompany,
@@ -47,7 +48,7 @@ describe("POST /companies", function () {
         handle: "new",
         numEmployees: 10,
       })
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
@@ -58,8 +59,16 @@ describe("POST /companies", function () {
         ...newCompany,
         logoUrl: "not-a-url",
       })
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
+  });
+
+  test("unauthorized with non admin", async function () {
+    const resp = await request(app)
+      .post("/companies")
+      .send(newCompany)
+      .set("authorization", `Bearer ${u1Token}`);
+    expect(resp.statusCode).toEqual(401);
   });
 });
 
@@ -265,19 +274,19 @@ describe("GET /companies? with query filters", function () {
     const resp = await request(app).get("/companies?nope=nope");
     expect(resp.statusCode).toEqual(400);
     expect(resp.body.error.message).toEqual("nope is invalid.");
-  });  
+  });
 
   test("test if min is graeter than max, fails", async function () {
     const resp = await request(app).get("/companies?minEmployees=6&maxEmployees=3");
     expect(resp.statusCode).toEqual(400);
     expect(resp.body.error.message).toEqual("Max employee cannot be more than min employee!");
-  });  
+  });
 
   test("test none existing company", async function () {
     const resp = await request(app).get("/companies?nameLike=asdf");
     expect(resp.statusCode).toEqual(404);
     expect(resp.body.error.message).toEqual("No results found");
-  });  
+  });
 
 });
 
@@ -326,7 +335,7 @@ describe("PATCH /companies/:handle", function () {
       .send({
         name: "C1-new",
       })
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.body).toEqual({
       company: {
         handle: "c1",
@@ -353,7 +362,7 @@ describe("PATCH /companies/:handle", function () {
       .send({
         name: "new nope",
       })
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(404);
   });
 
@@ -363,7 +372,7 @@ describe("PATCH /companies/:handle", function () {
       .send({
         handle: "c1-new",
       })
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
 
@@ -373,33 +382,49 @@ describe("PATCH /companies/:handle", function () {
       .send({
         logoUrl: "not-a-url",
       })
-      .set("authorization", `Bearer ${u1Token}`);
+      .set("authorization", `Bearer ${adminToken}`);
     expect(resp.statusCode).toEqual(400);
   });
-});
 
-/************************************** DELETE /companies/:handle */
-
-describe("DELETE /companies/:handle", function () {
-  test("works for users", async function () {
+  test("unauthorized with non admin", async function () {
     const resp = await request(app)
-      .delete(`/companies/c1`)
+      .patch(`/companies/c1`)
+      .send({
+        name: "C1-new",
+      })
       .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.body).toEqual({ deleted: "c1" });
-  });
-
-  test("unauth for anon", async function () {
-    const resp = await request(app)
-      .delete(`/companies/c1`);
     expect(resp.statusCode).toEqual(401);
   });
 
-  test("not found for no such company", async function () {
-    const resp = await request(app)
-      .delete(`/companies/nope`)
-      .set("authorization", `Bearer ${u1Token}`);
-    expect(resp.statusCode).toEqual(404);
+  /************************************** DELETE /companies/:handle */
+
+  describe("DELETE /companies/:handle", function () {
+    test("works for users", async function () {
+      const resp = await request(app)
+        .delete(`/companies/c1`)
+        .set("authorization", `Bearer ${adminToken}`);
+      expect(resp.body).toEqual({ deleted: "c1" });
+    });
+
+    test("unauth for anon", async function () {
+      const resp = await request(app)
+        .delete(`/companies/c1`);
+      expect(resp.statusCode).toEqual(401);
+    });
+
+    test("not found for no such company", async function () {
+      const resp = await request(app)
+        .delete(`/companies/nope`)
+        .set("authorization", `Bearer ${adminToken}`);
+      expect(resp.statusCode).toEqual(404);
+    });
+
+    test("unauthorized with non admin", async function () {
+      const resp = await request(app)
+        .delete(`/companies/c1`)
+        .set("authorization", `Bearer ${u1Token}`);
+      expect(resp.statusCode).toEqual(401);
+    });
   });
 });
-
 

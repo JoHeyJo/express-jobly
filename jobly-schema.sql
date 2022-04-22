@@ -32,3 +32,4 @@ CREATE TABLE applications (
     REFERENCES jobs ON DELETE CASCADE,
   PRIMARY KEY (username, job_id)
 );
+  

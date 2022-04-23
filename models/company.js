@@ -99,7 +99,7 @@ class Company {
 
     const companyJobs = companyRes.rows;
 
-    const jobs = companyJobs.map(j => {
+    let jobs = companyJobs.map(j => {
       return {
         id: j.id,
         title: j.title,
@@ -107,6 +107,8 @@ class Company {
         equity: j.equity
       };
     });
+
+    if(jobs[0].id === null) jobs = [];
 
     return {
       handle: company.handle,

@@ -75,7 +75,7 @@ class Company {
    * Throws NotFoundError if not found.
    **/
 
-  static async get(handle) {
+   static async get(handle) {
     const companyRes = await db.query(
       `SELECT handle,
                 name,
@@ -88,17 +88,34 @@ class Company {
                 salary,
                 equity
            FROM companies
-           JOIN jobs
-           ON company_handle = handle
+           LEFT OUTER JOIN jobs
+           ON handle = company_handle
            WHERE handle = $1`,
       [handle]);
 
-    const r = companyRes.rows[0];
+    const company = companyRes.rows[0];
 
-    if (!r) throw new NotFoundError(`No company: ${handle}`);
+    if (!company) throw new NotFoundError(`No company: ${handle}`);
 
+    const companyJobs = companyRes.rows;
 
-    return r
+    const jobs = companyJobs.map(j => {
+      return {
+        id: j.id,
+        title: j.title,
+        salary: j.salary,
+        equity: j.equity
+      };
+    });
+
+    return {
+      handle: company.handle,
+      name: company.name,
+      description: company.description,
+      numEmployees: company.numEmployees,
+      logoUrl: company.logoUrl,
+      jobs
+    };
   }
 
   /** Update company data with `data`.

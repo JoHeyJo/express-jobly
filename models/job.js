@@ -132,6 +132,69 @@ class Job {
 
     return job;
   }
+
+  static async filter(params){
+
+  const { values, queryString } = getJobsQuery(params)
+
+    const jobsRes = await db.query(`
+        SELECT  id,
+                title,
+                salary,
+                equity,
+                company_handle AS "compHandle"
+         FROM jobs
+         WHERE ${queryString}
+         ORDER BY title`,
+      values);
+
+    const jobs = jobsRes.rows;
+
+    return jobs;
+  }
+}
+
+/** getQueryValues takes in an object of query string parameters,
+  checks that given filtering params are valid, parses the incoming
+  data, and returns an object containing an SQL query string and corresponding
+  values */
+
+function getJobsQuery(params) {
+
+  //title case-insensitive, matches any part of string
+  //minSalary filters jobs with at least that salary
+  //hasEquity: true - filter jobs w non-zero equity. false - list all jobs
+  if(!params.title && !params.minSalary && !params.hasEquity){
+    throw new BadRequestError();
+  }
+
+  console.log(params.hasEquity)
+
+  let values = [];
+
+  let filterParams = [];
+
+  if (params.minSalary) {
+    values.push(params.minSalary);
+    filterParams.push(`salary >= $${values.length}`);
+  }
+  params.hasEquity === "true"
+    ? filterParams.push(`equity > 0`) 
+    : filterParams.push(`equity >= 0`);
+  
+
+  if (params.title) {
+    values.push(`%${params.title}%`);
+    filterParams.push(`title ILIKE $${values.length}`);
+  }
+
+  let queryString;
+
+  filterParams.length > 1
+    ? queryString = filterParams.join(" AND ")
+    : queryString = filterParams[0];
+console.log(queryString, values)
+  return { values, queryString };
 }
 
 module.exports = Job;

@@ -287,7 +287,6 @@ describe("GET /companies? with query filters", function () {
     expect(resp.statusCode).toEqual(404);
     expect(resp.body.error.message).toEqual("No results found");
   });
-
 });
 
 

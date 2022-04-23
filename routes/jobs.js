@@ -52,7 +52,7 @@ const router = express.Router();
  router.get("/", async function (req, res, next) {
   if (Object.keys(req.query).length > 0) {
       const jobs = await Job.filter(req.query);
-      return res.json({ companies });
+      return res.json({ jobs });
   } else {
     const jobs = await Job.findAll();
     return res.json({ jobs });

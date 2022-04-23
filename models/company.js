@@ -81,16 +81,24 @@ class Company {
                 name,
                 description,
                 num_employees AS "numEmployees",
-                logo_url AS "logoUrl"
+                logo_url AS "logoUrl",
+
+                id,
+                title,
+                salary,
+                equity
            FROM companies
+           JOIN jobs
+           ON company_handle = handle
            WHERE handle = $1`,
       [handle]);
 
-    const company = companyRes.rows[0];
+    const r = companyRes.rows[0];
 
-    if (!company) throw new NotFoundError(`No company: ${handle}`);
+    if (!r) throw new NotFoundError(`No company: ${handle}`);
 
-    return company;
+
+    return r
   }
 
   /** Update company data with `data`.
